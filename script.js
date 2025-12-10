@@ -27,7 +27,8 @@ const sectionHeader = document.querySelector('.section-0-header');
 const nextBtn = document.getElementById('nextBtn');
 const prevBtn = document.getElementById('prevBtn');
 const submitBtn = document.getElementById('submitBtn');
-const successMessage = document.getElementById('successMessage');
+const successPage = document.getElementById('successPage');
+const resetFormBtn = document.getElementById('resetFormBtn');
 const errorAlert = document.getElementById('errorAlert');
 const submitText = document.getElementById('submitText');
 const submitSpinner = document.getElementById('submitSpinner');
@@ -47,6 +48,7 @@ function setupEventListeners() {
     headerBtn.addEventListener('click', handleHeaderBtnClick);
     nextBtn.addEventListener('click', handleNextClick);
     prevBtn.addEventListener('click', handlePrevClick);
+    resetFormBtn.addEventListener('click', handleResetForm);
 
     setupRealtimeValidation();
     setupVisitConditionalFields();
@@ -181,7 +183,7 @@ function updateUI() {
         prevBtn.style.display = 'none';
         submitBtn.style.display = 'none';
     } else {
-        // Hide header, show form
+        // Regular form sections
         sectionHeader.style.display = 'none';
         form.classList.add('active');
         prevBtn.style.display = 'flex';
@@ -365,13 +367,13 @@ async function handleFormSubmit(e) {
 
     try {
         await submitToGoogleForms();
-        showSuccessMessage();
         form.reset();
         clearAllErrors();
         document.getElementById('visitAddressFields').style.display = 'none';
         document.getElementById('prayerRequestFields').style.display = 'none';
         document.getElementById('peaceHouseFields').style.display = 'none';
-        goToSection(0);
+        // Show success page
+        showSuccessPage();
     } catch (error) {
         console.error('Form submission error:', error);
         showErrorMessage();
@@ -381,7 +383,7 @@ async function handleFormSubmit(e) {
 }
 
 async function submitToGoogleForms() {
-    // Get radio button values and capitalize them (Sim/Não format expected by Google Forms)
+    // Get radio button values
     const wantVisitValue = document.querySelector('input[name="wantVisit"]:checked')?.value || '';
     const hasPrayerRequestValue = document.querySelector('input[name="hasPrayerRequest"]:checked')?.value || '';
     const wantPeaceHouseValue = document.querySelector('input[name="wantPeaceHouse"]:checked')?.value || '';
@@ -390,17 +392,20 @@ async function submitToGoogleForms() {
         name: document.getElementById('name')?.value.trim() || '',
         phone: document.getElementById('phone')?.value.trim() || '',
         wantVisit: wantVisitValue ? wantVisitValue.charAt(0).toUpperCase() + wantVisitValue.slice(1) : '',
-        visitAddress: document.getElementById('visitAddress')?.value.trim() || '',
-        visitAddressComplement: document.getElementById('visitAddressComplement')?.value.trim() || '',
-        visitBestDay: document.getElementById('visitBestDay')?.value.trim() || '',
-        visitObservations: document.getElementById('visitObservations')?.value.trim() || '',
+        // Only include visit fields if user selected "sim"
+        visitAddress: wantVisitValue === 'sim' ? (document.getElementById('visitAddress')?.value.trim() || '') : '',
+        visitAddressComplement: wantVisitValue === 'sim' ? (document.getElementById('visitAddressComplement')?.value.trim() || '') : '',
+        visitBestDay: wantVisitValue === 'sim' ? (document.getElementById('visitBestDay')?.value.trim() || '') : '',
+        visitObservations: wantVisitValue === 'sim' ? (document.getElementById('visitObservations')?.value.trim() || '') : '',
         hasPrayerRequest: hasPrayerRequestValue ? hasPrayerRequestValue.charAt(0).toUpperCase() + hasPrayerRequestValue.slice(1) : '',
-        prayerRequest: document.getElementById('prayerRequest')?.value.trim() || '',
+        // Only include prayer request field if user selected "sim"
+        prayerRequest: hasPrayerRequestValue === 'sim' ? (document.getElementById('prayerRequest')?.value.trim() || '') : '',
         wantPeaceHouse: wantPeaceHouseValue ? wantPeaceHouseValue.charAt(0).toUpperCase() + wantPeaceHouseValue.slice(1) : '',
-        peaceHouseAddress: document.getElementById('peaceHouseAddress')?.value.trim() || '',
-        peaceHouseComplement: document.getElementById('peaceHouseComplement')?.value.trim() || '',
-        peaceHouseBestDay: document.getElementById('peaceHouseBestDay')?.value.trim() || '',
-        peaceHouseObservations: document.getElementById('peaceHouseObservations')?.value.trim() || '',
+        // Only include peace house fields if user selected "sim"
+        peaceHouseAddress: wantPeaceHouseValue === 'sim' ? (document.getElementById('peaceHouseAddress')?.value.trim() || '') : '',
+        peaceHouseComplement: wantPeaceHouseValue === 'sim' ? (document.getElementById('peaceHouseComplement')?.value.trim() || '') : '',
+        peaceHouseBestDay: wantPeaceHouseValue === 'sim' ? (document.getElementById('peaceHouseBestDay')?.value.trim() || '') : '',
+        peaceHouseObservations: wantPeaceHouseValue === 'sim' ? (document.getElementById('peaceHouseObservations')?.value.trim() || '') : '',
     };
 
     // Log detailed debugging info
@@ -413,39 +418,31 @@ async function submitToGoogleForms() {
         console.log(`${fieldName} (${entryId}): "${value}"`);
     }
 
-    // Create a hidden form and submit using traditional method
-    const iframeId = 'hidden-google-form-' + Date.now();
-    const iframe = document.createElement('iframe');
-    iframe.id = iframeId;
-    iframe.name = iframeId;
-    iframe.style.display = 'none';
-    document.body.appendChild(iframe);
-
-    const hiddenForm = document.createElement('form');
-    hiddenForm.method = 'POST';
-    hiddenForm.action = GOOGLE_FORM_URL;
-    hiddenForm.target = iframeId;
-
-    // Add all fields to the form
+    // Create URLSearchParams for submission - works better with Google Forms
+    const params = new URLSearchParams();
+    
+    // Add all fields to the params
     for (const [fieldName, entryId] of Object.entries(FIELD_MAPPING)) {
-        const input = document.createElement('input');
-        input.type = 'hidden';
-        input.name = entryId;
-        input.value = fieldsData[fieldName];
-        hiddenForm.appendChild(input);
+        params.append(entryId, fieldsData[fieldName]);
     }
 
-    document.body.appendChild(hiddenForm);
-    hiddenForm.submit();
-
-    // Clean up after submission
-    setTimeout(() => {
-        hiddenForm.remove();
-        iframe.remove();
-    }, 1000);
-
-    console.log('Form submitted via traditional POST method');
-    return true;
+    try {
+        // Submit using fetch with no-cors mode to avoid CSP issues
+        const response = await fetch(GOOGLE_FORM_URL, {
+            method: 'POST',
+            body: params,
+            mode: 'no-cors',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            }
+        });
+        
+        console.log('Form submitted successfully via fetch');
+        return true;
+    } catch (error) {
+        console.error('Error submitting form:', error);
+        throw error;
+    }
 }
 
 function setLoadingState(isLoading) {
@@ -459,11 +456,11 @@ function setLoadingState(isLoading) {
     }
 }
 
-function showSuccessMessage() {
-    successMessage.style.display = 'block';
-    setTimeout(() => {
-        successMessage.style.display = 'none';
-    }, 5000);
+function showSuccessPage() {
+    form.style.display = 'none';
+    sectionHeader.style.display = 'none';
+    successPage.style.display = 'block';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 function showErrorMessage() {
@@ -474,8 +471,15 @@ function showErrorMessage() {
 }
 
 function hideMessages() {
-    successMessage.style.display = 'none';
     errorAlert.style.display = 'none';
+}
+
+function handleResetForm() {
+    form.style.display = 'block';
+    successPage.style.display = 'none';
+    sectionHeader.style.display = 'block';
+    currentSection = 0;
+    updateUI();
 }
 
 console.log('Form script with conditional visits and prayer sections loaded successfully');
