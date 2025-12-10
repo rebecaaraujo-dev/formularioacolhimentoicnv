@@ -1,19 +1,6 @@
-// ========================================
-// GOOGLE FORMS CONFIGURATION
-// ========================================
-// INSTRUÇÕES:
-// 1. Substitua YOUR_FORM_ID pelo ID do seu Google Form
-//    O ID está na URL do formulário: https://docs.google.com/forms/d/[SEU_ID_AQUI]/edit
-//
-// 2. Substitua cada 'entry.XXXXXXXXXX' pelo Entry ID correto do Google Forms
-//    Para obter os Entry IDs, siga as instruções no arquivo: get-form-ids.html
-//
-// 3. Mantenha a mesma ordem dos campos no Google Forms conforme listado abaixo
 
-const GOOGLE_FORM_URL = 'https://docs.google.com/forms/u/0/d/e/1FAIpQLSfo_paFek3JTiButMMt-z75Chz1Hjul8TYCN5WaH5Y06mu-ag/formResponse';
+const GOOGLE_FORM_URL = 'https://docs.google.com/forms/d/e/1FAIpQLSfo_paFek3JTiButMMt-z75Chz1Hjul8TYCN5WaH5Y06mu-ag/formResponse';
 
-// Mapeamento dos campos do HTML para os campos do Google Forms
-// Substitua os valores 'entry.XXXXXXXXXX' pelos Entry IDs corretos
 const FIELD_MAPPING = {
     name: 'entry.384572489',                    // Nome Completo
     phone: 'entry.1350948475',                   // Telefone
@@ -31,11 +18,12 @@ const FIELD_MAPPING = {
     peaceHouseObservations: 'entry.653825848',  // Observações (Casa de Paz)
 };
 
-const SECTIONS = ['personal', 'visitas', 'oracoes', 'paz'];
+const SECTIONS = ['consent', 'personal', 'visitas', 'oracoes', 'paz'];
 let currentSection = 0;
 
-// Form Elements
 const form = document.getElementById('contactForm');
+const headerBtn = document.getElementById('headerBtn');
+const sectionHeader = document.querySelector('.section-0-header');
 const nextBtn = document.getElementById('nextBtn');
 const prevBtn = document.getElementById('prevBtn');
 const submitBtn = document.getElementById('submitBtn');
@@ -43,8 +31,6 @@ const successMessage = document.getElementById('successMessage');
 const errorAlert = document.getElementById('errorAlert');
 const submitText = document.getElementById('submitText');
 const submitSpinner = document.getElementById('submitSpinner');
-const progressBar = document.getElementById('progressBar');
-const sectionIndicator = document.getElementById('sectionIndicator');
 
 const validationPatterns = {
     email: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
@@ -58,6 +44,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function setupEventListeners() {
     form.addEventListener('submit', handleFormSubmit);
+    headerBtn.addEventListener('click', handleHeaderBtnClick);
     nextBtn.addEventListener('click', handleNextClick);
     prevBtn.addEventListener('click', handlePrevClick);
 
@@ -148,6 +135,12 @@ function handleNextClick() {
     }
 }
 
+function handleHeaderBtnClick() {
+    if (validateCurrentSection()) {
+        goToSection(1);
+    }
+}
+
 function handlePrevClick() {
     if (currentSection > 0) {
         goToSection(currentSection - 1);
@@ -171,33 +164,36 @@ function goToSection(sectionIndex) {
 }
 
 function updateUI() {
-    const sections = document.querySelectorAll('.form-section');
-    
-    sections.forEach((section, index) => {
+    // Update form sections - only show the active one
+    document.querySelectorAll('.form-section').forEach((section, index) => {
         section.classList.remove('active');
         if (index === currentSection) {
             section.classList.add('active');
         }
     });
 
-    const progress = ((currentSection + 1) / SECTIONS.length) * 100;
-    progressBar.style.width = progress + '%';
-
-    // Update section indicator
-    sectionIndicator.textContent = currentSection + 1;
-
+    // Hide/show header and form based on current section
     if (currentSection === 0) {
-        prevBtn.style.display = 'none';
-    } else {
-        prevBtn.style.display = 'flex';
-    }
-
-    if (currentSection === SECTIONS.length - 1) {
+        // Show header, hide form
+        sectionHeader.style.display = 'block';
+        form.classList.remove('active');
         nextBtn.style.display = 'none';
-        submitBtn.style.display = 'flex';
-    } else {
-        nextBtn.style.display = 'flex';
+        prevBtn.style.display = 'none';
         submitBtn.style.display = 'none';
+    } else {
+        // Hide header, show form
+        sectionHeader.style.display = 'none';
+        form.classList.add('active');
+        prevBtn.style.display = 'flex';
+        
+        // Show Próximo button for sections 1-3, Enviar button for section 4
+        if (currentSection === SECTIONS.length - 1) {
+            nextBtn.style.display = 'none';
+            submitBtn.style.display = 'flex';
+        } else {
+            nextBtn.style.display = 'flex';
+            submitBtn.style.display = 'none';
+        }
     }
 
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -207,6 +203,8 @@ function validateCurrentSection() {
     const sectionName = SECTIONS[currentSection];
 
     switch (sectionName) {
+        case 'consent':
+            return validateConsentSection();
         case 'personal':
             return validatePersonalSection();
         case 'visitas':
@@ -230,18 +228,6 @@ function validatePersonalSection() {
     } else if (name.length < 3) {
         showFieldError('name', 'Nome deve ter pelo menos 3 caracteres');
         isValid = false;
-    }
-
-    const emailField = document.getElementById('email');
-    if (emailField) {
-        const email = emailField.value.trim();
-        if (!email) {
-            showFieldError('email', 'Email é obrigatório');
-            isValid = false;
-        } else if (!validationPatterns.email.test(email)) {
-            showFieldError('email', 'Email inválido');
-            isValid = false;
-        }
     }
 
     const phone = document.getElementById('phone').value.trim();
@@ -298,12 +284,6 @@ function validateOracoesSection() {
             isValid = false;
         } else if (prayerRequest.length < 10) {
             showFieldError('prayerRequest', 'Descreva melhor seu pedido de oração');
-            isValid = false;
-        }
-
-        const prayerType = document.querySelector('input[name="prayerType"]:checked');
-        if (!prayerType) {
-            showFieldError('prayerType', 'Selecione um tipo de oração');
             isValid = false;
         }
     }
@@ -370,7 +350,7 @@ function clearAllErrors() {
     const fields = [
         'name', 'phone', 'wantVisit', 'visitAddress',
         'visitAddressComplement', 'visitBestDay', 'visitObservations',
-        'hasPrayerRequest', 'prayerRequest', 'prayerType',
+        'hasPrayerRequest', 'prayerRequest',
         'wantPeaceHouse', 'peaceHouseAddress', 'peaceHouseComplement',
         'peaceHouseBestDay', 'peaceHouseObservations', 'consent'
     ];
@@ -379,10 +359,6 @@ function clearAllErrors() {
 
 async function handleFormSubmit(e) {
     e.preventDefault();
-
-    if (!validateConsentSection()) {
-        return;
-    }
 
     hideMessages();
     setLoadingState(true);
@@ -394,6 +370,7 @@ async function handleFormSubmit(e) {
         clearAllErrors();
         document.getElementById('visitAddressFields').style.display = 'none';
         document.getElementById('prayerRequestFields').style.display = 'none';
+        document.getElementById('peaceHouseFields').style.display = 'none';
         goToSection(0);
     } catch (error) {
         console.error('Form submission error:', error);
@@ -404,41 +381,71 @@ async function handleFormSubmit(e) {
 }
 
 async function submitToGoogleForms() {
-    const formData = new FormData();
+    // Get radio button values and capitalize them (Sim/Não format expected by Google Forms)
+    const wantVisitValue = document.querySelector('input[name="wantVisit"]:checked')?.value || '';
+    const hasPrayerRequestValue = document.querySelector('input[name="hasPrayerRequest"]:checked')?.value || '';
+    const wantPeaceHouseValue = document.querySelector('input[name="wantPeaceHouse"]:checked')?.value || '';
 
     const fieldsData = {
         name: document.getElementById('name')?.value.trim() || '',
         phone: document.getElementById('phone')?.value.trim() || '',
-        wantVisit: document.querySelector('input[name="wantVisit"]:checked')?.value || '',
+        wantVisit: wantVisitValue ? wantVisitValue.charAt(0).toUpperCase() + wantVisitValue.slice(1) : '',
         visitAddress: document.getElementById('visitAddress')?.value.trim() || '',
         visitAddressComplement: document.getElementById('visitAddressComplement')?.value.trim() || '',
         visitBestDay: document.getElementById('visitBestDay')?.value.trim() || '',
         visitObservations: document.getElementById('visitObservations')?.value.trim() || '',
-        hasPrayerRequest: document.querySelector('input[name="hasPrayerRequest"]:checked')?.value || '',
+        hasPrayerRequest: hasPrayerRequestValue ? hasPrayerRequestValue.charAt(0).toUpperCase() + hasPrayerRequestValue.slice(1) : '',
         prayerRequest: document.getElementById('prayerRequest')?.value.trim() || '',
-        prayerType: document.querySelector('input[name="prayerType"]:checked')?.value || '',
-        wantPeaceHouse: document.querySelector('input[name="wantPeaceHouse"]:checked')?.value || '',
+        wantPeaceHouse: wantPeaceHouseValue ? wantPeaceHouseValue.charAt(0).toUpperCase() + wantPeaceHouseValue.slice(1) : '',
         peaceHouseAddress: document.getElementById('peaceHouseAddress')?.value.trim() || '',
         peaceHouseComplement: document.getElementById('peaceHouseComplement')?.value.trim() || '',
         peaceHouseBestDay: document.getElementById('peaceHouseBestDay')?.value.trim() || '',
         peaceHouseObservations: document.getElementById('peaceHouseObservations')?.value.trim() || '',
     };
 
+    // Log detailed debugging info
+    console.log('=== FORM SUBMISSION DEBUG ===');
+    console.log('Form data being sent:', fieldsData);
+    
+    // Log each field individually
     for (const [fieldName, entryId] of Object.entries(FIELD_MAPPING)) {
-        formData.append(entryId, fieldsData[fieldName]);
+        const value = fieldsData[fieldName];
+        console.log(`${fieldName} (${entryId}): "${value}"`);
     }
 
-    try {
-        await fetch(GOOGLE_FORM_URL, {
-            method: 'POST',
-            body: formData,
-            mode: 'no-cors',
-        });
-        return true;
-    } catch (error) {
-        console.error('Submission error:', error);
-        throw error;
+    // Create a hidden form and submit using traditional method
+    const iframeId = 'hidden-google-form-' + Date.now();
+    const iframe = document.createElement('iframe');
+    iframe.id = iframeId;
+    iframe.name = iframeId;
+    iframe.style.display = 'none';
+    document.body.appendChild(iframe);
+
+    const hiddenForm = document.createElement('form');
+    hiddenForm.method = 'POST';
+    hiddenForm.action = GOOGLE_FORM_URL;
+    hiddenForm.target = iframeId;
+
+    // Add all fields to the form
+    for (const [fieldName, entryId] of Object.entries(FIELD_MAPPING)) {
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = entryId;
+        input.value = fieldsData[fieldName];
+        hiddenForm.appendChild(input);
     }
+
+    document.body.appendChild(hiddenForm);
+    hiddenForm.submit();
+
+    // Clean up after submission
+    setTimeout(() => {
+        hiddenForm.remove();
+        iframe.remove();
+    }, 1000);
+
+    console.log('Form submitted via traditional POST method');
+    return true;
 }
 
 function setLoadingState(isLoading) {
