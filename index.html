@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulário Acolhimento ICNV</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <div class="form-wrapper">
+            <div class="form-header">
+                <h1>O que podemos fazer por você?</h1>
+                <p>Preencha o formulário em seções</p>
+            </div>
+
+            <!-- Indicador de Progresso -->
+            <div class="progress-indicator">
+                <div class="progress-bar" id="progressBar"></div>
+                <div class="section-indicator">
+                    <span class="section-number" id="sectionIndicator">1</span> / 4
+                </div>
+            </div>
+
+            <form id="contactForm" class="form">
+                <!-- SEÇÃO 1: DADOS PESSOAIS -->
+                <div class="form-section active" data-section="personal">
+                    <h2 class="section-title">Dados Pessoais</h2>
+                    
+                    <!-- Nome -->
+                    <div class="form-group">
+                        <label for="name">Nome Completo *</label>
+                        <input 
+                            type="text" 
+                            id="name" 
+                            name="name" 
+                            placeholder="Digite seu nome completo"
+                            required
+                        >
+                        <span class="error-message" id="nameError"></span>
+                    </div>
+
+                    <!-- Telefone -->
+                    <div class="form-group">
+                        <label for="phone">Telefone *</label>
+                        <input 
+                            type="tel" 
+                            id="phone" 
+                            name="phone" 
+                            placeholder="(XX) XXXXX-XXXX"
+                            required
+                        >
+                        <span class="error-message" id="phoneError"></span>
+                    </div>
+                </div>
+
+                <!-- SEÇÃO 2: VISITAS -->
+                <div class="form-section" data-section="visitas">
+                    <h2 class="section-title">Visitas</h2>
+
+                    <!-- Pergunta: Deseja receber visita? -->
+                    <div class="form-group">
+                        <label>Você deseja receber uma visita? *</label>
+                        <div class="radio-group">
+                            <label class="radio-label">
+                                <input type="radio" name="wantVisit" value="sim" id="wantVisitYes" required>
+                                <span>Sim</span>
+                            </label>
+                            <label class="radio-label">
+                                <input type="radio" name="wantVisit" value="nao" id="wantVisitNo" required>
+                                <span>Não</span>
+                            </label>
+                        </div>
+                        <span class="error-message" id="wantVisitError"></span>
+                    </div>
+
+                    <!-- Campos condicionais (mostrados apenas se "Sim") -->
+                    <div id="visitAddressFields" style="display: none;">
+                        <!-- Endereço para visita -->
+                        <div class="form-group">
+                            <label for="visitAddress">Endereço para Visita *</label>
+                            <input 
+                                type="text" 
+                                id="visitAddress" 
+                                name="visitAddress" 
+                                placeholder="Digite o endereço completo"
+                            >
+                            <span class="error-message" id="visitAddressError"></span>
+                        </div>
+
+                        <!-- Complemento do endereço -->
+                        <div class="form-group">
+                            <label for="visitAddressComplement">Complemento (Apto, Sala, etc)</label>
+                            <input 
+                                type="text" 
+                                id="visitAddressComplement" 
+                                name="visitAddressComplement" 
+                                placeholder="Complemento do endereço"
+                            >
+                            <span class="error-message" id="visitAddressComplementError"></span>
+                        </div>
+
+                        <!-- Melhor dia para visita -->
+                        <div class="form-group">
+                            <label for="visitBestDay">Qual o melhor dia para visita? *</label>
+                            <input 
+                                type="text" 
+                                id="visitBestDay" 
+                                name="visitBestDay" 
+                                placeholder="Ex: Terça e Quinta à noite"
+                            >
+                            <span class="error-message" id="visitBestDayError"></span>
+                        </div>
+
+                        <!-- Observações sobre a visita -->
+                        <div class="form-group">
+                            <label for="visitObservations">Observações</label>
+                            <textarea 
+                                id="visitObservations" 
+                                name="visitObservations" 
+                                placeholder="Escreva observações adicionais..."
+                                rows="3"
+                            ></textarea>
+                            <span class="error-message" id="visitObservationsError"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SEÇÃO 3: PEDIDO DE ORAÇÃO -->
+                <div class="form-section" data-section="oracoes">
+                    <h2 class="section-title">Pedido de Oração</h2>
+
+                    <!-- Pergunta: Tem um pedido de oração? -->
+                    <div class="form-group">
+                        <label>Você tem um pedido de oração? *</label>
+                        <div class="radio-group">
+                            <label class="radio-label">
+                                <input type="radio" name="hasPrayerRequest" value="sim" id="hasPrayerRequestYes" required>
+                                <span>Sim</span>
+                            </label>
+                            <label class="radio-label">
+                                <input type="radio" name="hasPrayerRequest" value="nao" id="hasPrayerRequestNo" required>
+                                <span>Não</span>
+                            </label>
+                        </div>
+                        <span class="error-message" id="hasPrayerRequestError"></span>
+                    </div>
+
+                    <!-- Campos condicionais (mostrados apenas se "Sim") -->
+                    <div id="prayerRequestFields" style="display: none;">
+                        <!-- Descrição do pedido de oração -->
+                        <div class="form-group">
+                            <label for="prayerRequest">Qual é o seu pedido de oração? *</label>
+                            <textarea 
+                                id="prayerRequest" 
+                                name="prayerRequest" 
+                                placeholder="Descreva seu pedido de oração..."
+                                rows="5"
+                            ></textarea>
+                            <span class="error-message" id="prayerRequestError"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SEÇÃO 4: CASA DE PAZ -->
+                <div class="form-section" data-section="paz">
+                    <h2 class="section-title">Casa de Paz</h2>
+                    <div class="form-group">
+                        <label>Você deseja receber o projeto Casa de Paz? *</label>
+                        <div class="radio-group">
+                            <label class="radio-label">
+                                <input type="radio" name="wantPeaceHouse" value="sim" id="wantPeaceHouseYes" required>
+                                <span>Sim</span>
+                            </label>
+                            <label class="radio-label">
+                                <input type="radio" name="wantPeaceHouse" value="nao" id="wantPeaceHouseNo" required>
+                                <span>Não</span>
+                            </label>
+                        </div>
+                        <span class="error-message" id="wantPeaceHouseError"></span>
+                    </div>
+
+                    <!-- Campos condicionais (mostrados apenas se "Sim") -->
+                    <div id="peaceHouseFields" style="display: none;">
+                        <!-- Endereço para Casa de Paz -->
+                        <div class="form-group">
+                            <label for="peaceHouseAddress">Endereço *</label>
+                            <input 
+                                type="text" 
+                                id="peaceHouseAddress" 
+                                name="peaceHouseAddress" 
+                                placeholder="Digite o endereço completo"
+                            >
+                            <span class="error-message" id="peaceHouseAddressError"></span>
+                        </div>
+
+                        <!-- Complemento do endereço -->
+                        <div class="form-group">
+                            <label for="peaceHouseComplement">Complemento (Apto, Sala, etc)</label>
+                            <input 
+                                type="text" 
+                                id="peaceHouseComplement" 
+                                name="peaceHouseComplement" 
+                                placeholder="Complemento do endereço"
+                            >
+                            <span class="error-message" id="peaceHouseComplementError"></span>
+                        </div>
+
+                        <!-- Melhor dia para visita -->
+                        <div class="form-group">
+                            <label for="peaceHouseBestDay">Qual o melhor dia para visita? *</label>
+                            <input 
+                                type="text" 
+                                id="peaceHouseBestDay" 
+                                name="peaceHouseBestDay" 
+                                placeholder="Ex: Terça e Quinta à noite"
+                            >
+                            <span class="error-message" id="peaceHouseBestDayError"></span>
+                        </div>
+
+                        <!-- Observações sobre a visita -->
+                        <div class="form-group">
+                            <label for="peaceHouseObservations">Observações</label>
+                            <textarea 
+                                id="peaceHouseObservations" 
+                                name="peaceHouseObservations" 
+                                placeholder="Escreva observações adicionais..."
+                                rows="3"
+                            ></textarea>
+                            <span class="error-message" id="peaceHouseObservationsError"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Checkbox de Consentimento -->
+                <div class="form-group checkbox-group">
+                    <label class="checkbox-label">
+                        <input 
+                            type="checkbox" 
+                            id="consent" 
+                            name="consent" 
+                            required
+                        >
+                        <span>Concordo com o tratamento dos meus dados *</span>
+                    </label>
+                    <span class="error-message" id="consentError"></span>
+                </div>
+
+                <!-- Botões de Navegação -->
+                <div class="form-actions">
+                    <button type="button" class="btn-secondary" id="prevBtn" style="display: none;">
+                        ← Voltar
+                    </button>
+                    <button type="button" class="btn-primary" id="nextBtn">
+                        Próximo →
+                    </button>
+                    <button type="submit" class="submit-btn" id="submitBtn" style="display: none;">
+                        <span id="submitText">Enviar Formulário</span>
+                        <span id="submitSpinner" class="spinner" style="display: none;"></span>
+                    </button>
+                </div>
+
+                <!-- Mensagem de Sucesso -->
+                <div id="successMessage" class="success-message" style="display: none;">
+                    ✓ Formulário enviado com sucesso!
+                </div>
+
+                <!-- Mensagem de Erro -->
+                <div id="errorAlert" class="error-alert" style="display: none;">
+                    ✕ Ocorreu um erro ao enviar o formulário. Tente novamente.
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

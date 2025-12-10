@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Obter IDs do Google Forms</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .step {
+            margin-bottom: 25px;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border-left: 4px solid #4285f4;
+        }
+        .step h2 {
+            color: #4285f4;
+            margin-top: 0;
+            font-size: 18px;
+        }
+        code {
+            background-color: #e8e8e8;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+        }
+        .note {
+            background-color: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        ol {
+            line-height: 1.8;
+        }
+        .example {
+            background-color: #e7f3ff;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📋 Como Obter os IDs do Google Forms</h1>
+        
+        <div class="step">
+            <h2>Passo 1: Obter o Form ID</h2>
+            <ol>
+                <li>Abra seu Google Form</li>
+                <li>Clique em "Enviar" no canto superior direito</li>
+                <li>Copie o URL do formulário</li>
+                <li>O Form ID está na URL entre <code>/d/</code> e <code>/viewform</code></li>
+            </ol>
+            <div class="example">
+                <strong>Exemplo de URL:</strong><br>
+                <code>https://docs.google.com/forms/d/<span style="color: red;">1FAIpQLSe...</span>/viewform</code><br>
+                <small>A parte em vermelho é o seu Form ID</small>
+            </div>
+        </div>
+
+        <div class="step">
+            <h2>Passo 2: Obter os Entry IDs</h2>
+            <ol>
+                <li>Com seu Google Form aberto, clique nos 3 pontos (⋮) no canto superior direito</li>
+                <li>Selecione "Obter link pré-preenchido" ou "Get pre-filled link"</li>
+                <li>Preencha cada campo do formulário com um texto que identifique o campo (ex: "NOME", "EMAIL", etc.)</li>
+                <li>Clique em "Obter link" ou "Get link"</li>
+                <li>Copie o link gerado</li>
+                <li>Cole o link em um editor de texto</li>
+            </ol>
+            <div class="example">
+                <strong>Exemplo de URL pré-preenchida:</strong><br>
+                <code>https://docs.google.com/forms/d/e/1FAIpQLSe.../viewform?<br>
+                entry.123456=NOME&<br>
+                entry.789012=EMAIL&<br>
+                entry.345678=TELEFONE</code>
+            </div>
+        </div>
+
+        <div class="step">
+            <h2>Passo 3: Mapear os Entry IDs</h2>
+            <p>Para cada campo, você verá algo como <code>entry.123456=VALOR</code>. O número após "entry." é o Entry ID daquele campo.</p>
+            <p>Anote cada Entry ID junto com o campo correspondente:</p>
+            <ul>
+                <li><strong>Nome Completo:</strong> entry.XXXXXX</li>
+                <li><strong>Email:</strong> entry.XXXXXX</li>
+                <li><strong>Telefone:</strong> entry.XXXXXX</li>
+                <li>E assim por diante...</li>
+            </ul>
+        </div>
+
+        <div class="note">
+            <strong>⚠️ Importante:</strong> Depois de obter todos os IDs, você precisará atualizar o arquivo <code>script.js</code> com essas informações.
+        </div>
+
+        <div class="step">
+            <h2>Passo 4: Atualizar o script.js</h2>
+            <p>Abra o arquivo <code>script.js</code> e substitua:</p>
+            <ol>
+                <li>A linha que contém <code>GOOGLE_FORM_URL</code> com seu Form ID</li>
+                <li>Todos os valores <code>entry_XXXXXXXXXX</code> no objeto <code>FIELD_MAPPING</code> com os Entry IDs corretos</li>
+            </ol>
+        </div>
+
+        <div class="note">
+            <strong>💡 Dica:</strong> Mantenha a mesma ordem dos campos no Google Forms que está no seu HTML para facilitar o mapeamento.
+        </div>
+    </div>
+</body>
+</html>
