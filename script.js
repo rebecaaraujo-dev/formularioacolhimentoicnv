@@ -251,9 +251,16 @@ function validateVisitasSection() {
     if (!wantVisit) {
         showFieldError('wantVisit', 'Selecione uma opção');
         isValid = false;
+        return isValid;
     }
 
-    if (wantVisit && wantVisit.value === 'sim') {
+    // If user selected "nao" (no), section is valid - team can still contact them
+    if (wantVisit.value === 'nao') {
+        return true;
+    }
+
+    // Only validate conditional fields if user selected "sim" (yes)
+    if (wantVisit.value === 'sim') {
         const visitAddress = document.getElementById('visitAddress').value.trim();
         if (!visitAddress) {
             showFieldError('visitAddress', 'Endereço é obrigatório');
@@ -277,9 +284,16 @@ function validateOracoesSection() {
     if (!hasPrayerRequest) {
         showFieldError('hasPrayerRequest', 'Selecione uma opção');
         isValid = false;
+        return isValid;
     }
 
-    if (hasPrayerRequest && hasPrayerRequest.value === 'sim') {
+    // If user selected "nao" (no), section is valid - team can still contact them
+    if (hasPrayerRequest.value === 'nao') {
+        return true;
+    }
+
+    // Only validate conditional fields if user selected "sim" (yes)
+    if (hasPrayerRequest.value === 'sim') {
         const prayerRequest = document.getElementById('prayerRequest').value.trim();
         if (!prayerRequest) {
             showFieldError('prayerRequest', 'Campo obrigatório');
@@ -300,9 +314,16 @@ function validatePazSection() {
     if (!wantPeaceHouse) {
         showFieldError('wantPeaceHouse', 'Selecione uma opção');
         isValid = false;
+        return isValid;
     }
 
-    if (wantPeaceHouse && wantPeaceHouse.value === 'sim') {
+    // If user selected "nao" (no), section is valid - team can still contact them
+    if (wantPeaceHouse.value === 'nao') {
+        return true;
+    }
+
+    // Only validate conditional fields if user selected "sim" (yes)
+    if (wantPeaceHouse.value === 'sim') {
         const peaceHouseAddress = document.getElementById('peaceHouseAddress').value.trim();
         if (!peaceHouseAddress) {
             showFieldError('peaceHouseAddress', 'Campo obrigatório');
@@ -388,19 +409,26 @@ async function submitToGoogleForms() {
     const hasPrayerRequestValue = document.querySelector('input[name="hasPrayerRequest"]:checked')?.value || '';
     const wantPeaceHouseValue = document.querySelector('input[name="wantPeaceHouse"]:checked')?.value || '';
 
+    // Helper function to convert sim/nao to proper form values with accents
+    const convertToFormValue = (value) => {
+        if (value === 'sim') return 'Sim';
+        if (value === 'nao') return 'Não';
+        return '';
+    };
+
     const fieldsData = {
         name: document.getElementById('name')?.value.trim() || '',
         phone: document.getElementById('phone')?.value.trim() || '',
-        wantVisit: wantVisitValue ? wantVisitValue.charAt(0).toUpperCase() + wantVisitValue.slice(1) : '',
+        wantVisit: convertToFormValue(wantVisitValue),
         // Only include visit fields if user selected "sim"
         visitAddress: wantVisitValue === 'sim' ? (document.getElementById('visitAddress')?.value.trim() || '') : '',
         visitAddressComplement: wantVisitValue === 'sim' ? (document.getElementById('visitAddressComplement')?.value.trim() || '') : '',
         visitBestDay: wantVisitValue === 'sim' ? (document.getElementById('visitBestDay')?.value.trim() || '') : '',
         visitObservations: wantVisitValue === 'sim' ? (document.getElementById('visitObservations')?.value.trim() || '') : '',
-        hasPrayerRequest: hasPrayerRequestValue ? hasPrayerRequestValue.charAt(0).toUpperCase() + hasPrayerRequestValue.slice(1) : '',
+        hasPrayerRequest: convertToFormValue(hasPrayerRequestValue),
         // Only include prayer request field if user selected "sim"
         prayerRequest: hasPrayerRequestValue === 'sim' ? (document.getElementById('prayerRequest')?.value.trim() || '') : '',
-        wantPeaceHouse: wantPeaceHouseValue ? wantPeaceHouseValue.charAt(0).toUpperCase() + wantPeaceHouseValue.slice(1) : '',
+        wantPeaceHouse: convertToFormValue(wantPeaceHouseValue),
         // Only include peace house fields if user selected "sim"
         peaceHouseAddress: wantPeaceHouseValue === 'sim' ? (document.getElementById('peaceHouseAddress')?.value.trim() || '') : '',
         peaceHouseComplement: wantPeaceHouseValue === 'sim' ? (document.getElementById('peaceHouseComplement')?.value.trim() || '') : '',
@@ -411,6 +439,7 @@ async function submitToGoogleForms() {
     // Log detailed debugging info
     console.log('=== FORM SUBMISSION DEBUG ===');
     console.log('Form data being sent:', fieldsData);
+    console.log('Google Form URL:', GOOGLE_FORM_URL);
     
     // Log each field individually
     for (const [fieldName, entryId] of Object.entries(FIELD_MAPPING)) {
@@ -418,26 +447,32 @@ async function submitToGoogleForms() {
         console.log(`${fieldName} (${entryId}): "${value}"`);
     }
 
-    // Create URLSearchParams for submission - works better with Google Forms
+    // Create URLSearchParams for submission - this is the correct format for Google Forms
     const params = new URLSearchParams();
     
     // Add all fields to the params
     for (const [fieldName, entryId] of Object.entries(FIELD_MAPPING)) {
-        params.append(entryId, fieldsData[fieldName]);
+        const value = fieldsData[fieldName];
+        if (value) {  // Only add non-empty values
+            params.append(entryId, value);
+        }
     }
 
+    console.log('URLSearchParams being sent:', params.toString());
+
     try {
-        // Submit using fetch with no-cors mode to avoid CSP issues
+        // Submit using fetch with no-cors mode to avoid CORS issues with Google Forms
         const response = await fetch(GOOGLE_FORM_URL, {
             method: 'POST',
-            body: params,
+            body: params.toString(),
             mode: 'no-cors',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded'
             }
         });
         
-        console.log('Form submitted successfully via fetch');
+        console.log('Form submission request sent to Google Forms');
+        // Note: With no-cors mode, we can't verify the response, but the form should be submitted
         return true;
     } catch (error) {
         console.error('Error submitting form:', error);
