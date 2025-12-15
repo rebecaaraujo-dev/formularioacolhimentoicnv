@@ -237,6 +237,38 @@
                 </div>
             </form>
 
+            <!-- SECTION 5: REVIEW/SUMMARY PAGE -->
+            <div id="summaryPage" class="summary-page hidden">
+                <div class="summary-content">
+                    <div class="progress-indicator">
+                        <div class="progress-bar" style="width: 100%;"></div>
+                        <div class="section-indicator">
+                            <span class="section-number">5</span> / 5
+                        </div>
+                    </div>
+                    <h2 class="section-title">Resumo das Informações</h2>
+                    <p class="summary-description">Por favor, revise os dados que você forneceu antes de enviar o formulário.</p>
+                    
+                    <div class="summary-data" id="summaryData">
+                        <!-- Data will be populated by JavaScript -->
+                    </div>
+
+                    <div class="summary-actions">
+                        <button type="button" class="btn-secondary" id="editBtn">
+                            ✎ Editar Formulário
+                        </button>
+                        <button type="button" class="submit-btn" id="confirmSubmitBtn">
+                            <span id="confirmSubmitText">Enviar Formulário</span>
+                            <span id="confirmSubmitSpinner" class="spinner hidden"></span>
+                        </button>
+                    </div>
+
+                    <div id="errorAlert" class="error-alert hidden">
+                        ✕ Ocorreu um erro ao enviar o formulário. Tente novamente.
+                    </div>
+                </div>
+            </div>
+
             <!-- SUCCESS PAGE -->
             <div id="successPage" class="success-page hidden">
                 <div class="success-content">

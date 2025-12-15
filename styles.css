@@ -675,6 +675,109 @@ body {
 
 
 /* ============================================
+   SUMMARY PAGE
+   ============================================ */
+
+.summary-page {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    min-height: auto;
+    animation: fadeIn 0.5s ease-out;
+}
+
+.summary-content {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.summary-description {
+    color: #666;
+    font-size: 1rem;
+    margin: 0.5rem 0 0 0;
+    line-height: 1.5;
+}
+
+.summary-data {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.summary-section {
+    background: #f8f9fa;
+    border-left: 4px solid var(--green);
+    padding: 1rem;
+    border-radius: 4px;
+}
+
+.summary-section h3 {
+    font-family: var(--font-impact);
+    font-size: 1.2rem;
+    color: var(--green);
+    margin: 0 0 1rem 0;
+    font-weight: 500;
+}
+
+.summary-item {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 0.75rem;
+}
+
+.summary-item:last-child {
+    margin-bottom: 0;
+}
+
+.summary-label {
+    font-weight: 600;
+    color: var(--black);
+    font-size: 0.95rem;
+    margin-bottom: 0.25rem;
+}
+
+.summary-value {
+    color: #666;
+    font-size: 1rem;
+    line-height: 1.5;
+    padding-left: 1rem;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
+.summary-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.summary-actions button {
+    flex: 1;
+    min-width: 200px;
+}
+
+.summary-actions .btn-secondary {
+    background: white;
+    color: var(--green);
+    border: 2px solid var(--green);
+}
+
+.summary-actions .btn-secondary:hover {
+    background: var(--green);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-hover);
+}
+
+.summary-actions .submit-btn {
+    flex: 1;
+    min-width: 200px;
+}
+
+/* ============================================
    RESPONSIVE DESIGN
    ============================================ */
 
@@ -703,6 +806,10 @@ body {
         font-size: 14px;
     }
 
+    .btn-primary-reset {
+        width: 62%;
+    }
+
     .form-actions {
         flex-wrap: wrap;
         gap: 10px;
@@ -714,6 +821,27 @@ body {
     .btn-primary-reset {
         flex: 1;
         min-width: 100px;
+    }
+
+    .summary-actions {
+        flex-direction: column;
+    }
+
+    .summary-actions button {
+        width: 100%;
+    }
+
+    .summary-item {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .summary-label {
+        margin-bottom: 0.25rem;
+    }
+
+    .summary-value {
+        padding-left: 0;
     }
 }
 

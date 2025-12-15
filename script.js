@@ -18,7 +18,7 @@ const FIELD_MAPPING = {
     peaceHouseObservations: 'entry.653825848',  // Observações (Casa de Paz)
 };
 
-const SECTIONS = ['consent', 'personal', 'visitas', 'oracoes', 'paz'];
+const SECTIONS = ['consent', 'personal', 'visitas', 'oracoes', 'paz', 'summary'];
 let currentSection = 0;
 
 const form = document.getElementById('contactForm');
@@ -28,10 +28,15 @@ const nextBtn = document.getElementById('nextBtn');
 const prevBtn = document.getElementById('prevBtn');
 const submitBtn = document.getElementById('submitBtn');
 const successPage = document.getElementById('successPage');
+const summaryPage = document.getElementById('summaryPage');
 const resetFormBtn = document.getElementById('resetFormBtn');
 const errorAlert = document.getElementById('errorAlert');
 const submitText = document.getElementById('submitText');
 const submitSpinner = document.getElementById('submitSpinner');
+const editBtn = document.getElementById('editBtn');
+const confirmSubmitBtn = document.getElementById('confirmSubmitBtn');
+const confirmSubmitText = document.getElementById('confirmSubmitText');
+const confirmSubmitSpinner = document.getElementById('confirmSubmitSpinner');
 
 const validationPatterns = {
     email: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
@@ -49,6 +54,8 @@ function setupEventListeners() {
     nextBtn.addEventListener('click', handleNextClick);
     prevBtn.addEventListener('click', handlePrevClick);
     resetFormBtn.addEventListener('click', handleResetForm);
+    editBtn.addEventListener('click', handleEditClick);
+    confirmSubmitBtn.addEventListener('click', handleConfirmSubmit);
 
     setupRealtimeValidation();
     setupVisitConditionalFields();
@@ -128,11 +135,11 @@ function setupRealtimeValidation() {
 
 function handleNextClick() {
     if (validateCurrentSection()) {
-        if (currentSection < SECTIONS.length - 1) {
+        if (currentSection < SECTIONS.length - 2) {  // -2 because summary is the last section
             goToSection(currentSection + 1);
-        } else {
-            nextBtn.classList.add('hidden');
-            submitBtn.classList.remove('hidden');
+        } else if (currentSection === SECTIONS.length - 2) {  // Going from 'paz' to 'summary'
+            goToSection(SECTIONS.length - 1);  // Go to summary
+            populateSummary();
         }
     }
 }
@@ -179,19 +186,32 @@ function updateUI() {
         // Show header, hide form
         sectionHeader.classList.remove('hidden');
         form.classList.remove('active');
+        form.classList.add('hidden');
+        summaryPage.classList.add('hidden');
         nextBtn.classList.add('hidden');
         prevBtn.classList.add('hidden');
+        submitBtn.classList.add('hidden');
+    } else if (currentSection === SECTIONS.length - 1) {
+        // Summary page
+        sectionHeader.classList.add('hidden');
+        form.classList.add('hidden');
+        form.classList.remove('active');
+        summaryPage.classList.remove('hidden');
+        nextBtn.classList.add('hidden');
+        prevBtn.classList.remove('hidden');
         submitBtn.classList.add('hidden');
     } else {
         // Regular form sections
         sectionHeader.classList.add('hidden');
+        form.classList.remove('hidden');
         form.classList.add('active');
+        summaryPage.classList.add('hidden');
         prevBtn.classList.remove('hidden');
         
-        // Show Próximo button for sections 1-3, Enviar button for section 4
-        if (currentSection === SECTIONS.length - 1) {
-            nextBtn.classList.add('hidden');
-            submitBtn.classList.remove('hidden');
+        // Show Próximo button for sections 1-3, last form section (paz/4)
+        if (currentSection === SECTIONS.length - 2) {  // paz section
+            nextBtn.classList.remove('hidden');
+            submitBtn.classList.add('hidden');
         } else {
             nextBtn.classList.remove('hidden');
             submitBtn.classList.add('hidden');
@@ -491,9 +511,129 @@ function setLoadingState(isLoading) {
     }
 }
 
+function setConfirmLoadingState(isLoading) {
+    confirmSubmitBtn.disabled = isLoading;
+    if (isLoading) {
+        confirmSubmitText.style.display = 'none';
+        confirmSubmitSpinner.classList.remove('hidden');
+    } else {
+        confirmSubmitText.style.display = 'inline';
+        confirmSubmitSpinner.classList.add('hidden');
+    }
+}
+
+function populateSummary() {
+    // Get all form data
+    const wantVisitValue = document.querySelector('input[name="wantVisit"]:checked')?.value || '';
+    const hasPrayerRequestValue = document.querySelector('input[name="hasPrayerRequest"]:checked')?.value || '';
+    const wantPeaceHouseValue = document.querySelector('input[name="wantPeaceHouse"]:checked')?.value || '';
+
+    const convertValue = (value) => {
+        if (value === 'sim') return 'Sim';
+        if (value === 'nao') return 'Não';
+        return '';
+    };
+
+    const summaryData = document.getElementById('summaryData');
+    let html = '';
+
+    // Personal Data Section
+    html += '<div class="summary-section">';
+    html += '<h3>Dados Pessoais</h3>';
+    const name = document.getElementById('name')?.value.trim() || '';
+    const phone = document.getElementById('phone')?.value.trim() || '';
+    html += `<div class="summary-item"><span class="summary-label">Nome Completo:</span> <span class="summary-value">${name}</span></div>`;
+    html += `<div class="summary-item"><span class="summary-label">Telefone:</span> <span class="summary-value">${phone}</span></div>`;
+    html += '</div>';
+
+    // Visit Section
+    html += '<div class="summary-section">';
+    html += '<h3>Visitas</h3>';
+    html += `<div class="summary-item"><span class="summary-label">Deseja receber visita?</span> <span class="summary-value">${convertValue(wantVisitValue)}</span></div>`;
+    if (wantVisitValue === 'sim') {
+        const visitAddress = document.getElementById('visitAddress')?.value.trim() || '';
+        const visitAddressComplement = document.getElementById('visitAddressComplement')?.value.trim() || '';
+        const visitBestDay = document.getElementById('visitBestDay')?.value.trim() || '';
+        const visitObservations = document.getElementById('visitObservations')?.value.trim() || '';
+        
+        html += `<div class="summary-item"><span class="summary-label">Endereço:</span> <span class="summary-value">${visitAddress}</span></div>`;
+        if (visitAddressComplement) {
+            html += `<div class="summary-item"><span class="summary-label">Complemento:</span> <span class="summary-value">${visitAddressComplement}</span></div>`;
+        }
+        html += `<div class="summary-item"><span class="summary-label">Melhor dia:</span> <span class="summary-value">${visitBestDay}</span></div>`;
+        if (visitObservations) {
+            html += `<div class="summary-item"><span class="summary-label">Observações:</span> <span class="summary-value">${visitObservations}</span></div>`;
+        }
+    }
+    html += '</div>';
+
+    // Prayer Request Section
+    html += '<div class="summary-section">';
+    html += '<h3>Pedido de Oração</h3>';
+    html += `<div class="summary-item"><span class="summary-label">Tem pedido de oração?</span> <span class="summary-value">${convertValue(hasPrayerRequestValue)}</span></div>`;
+    if (hasPrayerRequestValue === 'sim') {
+        const prayerRequest = document.getElementById('prayerRequest')?.value.trim() || '';
+        html += `<div class="summary-item"><span class="summary-label">Pedido:</span> <span class="summary-value">${prayerRequest}</span></div>`;
+    }
+    html += '</div>';
+
+    // Peace House Section
+    html += '<div class="summary-section">';
+    html += '<h3>Casa de Paz</h3>';
+    html += `<div class="summary-item"><span class="summary-label">Deseja receber Casa de Paz?</span> <span class="summary-value">${convertValue(wantPeaceHouseValue)}</span></div>`;
+    if (wantPeaceHouseValue === 'sim') {
+        const peaceHouseAddress = document.getElementById('peaceHouseAddress')?.value.trim() || '';
+        const peaceHouseComplement = document.getElementById('peaceHouseComplement')?.value.trim() || '';
+        const peaceHouseBestDay = document.getElementById('peaceHouseBestDay')?.value.trim() || '';
+        const peaceHouseObservations = document.getElementById('peaceHouseObservations')?.value.trim() || '';
+        
+        html += `<div class="summary-item"><span class="summary-label">Endereço:</span> <span class="summary-value">${peaceHouseAddress}</span></div>`;
+        if (peaceHouseComplement) {
+            html += `<div class="summary-item"><span class="summary-label">Complemento:</span> <span class="summary-value">${peaceHouseComplement}</span></div>`;
+        }
+        html += `<div class="summary-item"><span class="summary-label">Melhor dia:</span> <span class="summary-value">${peaceHouseBestDay}</span></div>`;
+        if (peaceHouseObservations) {
+            html += `<div class="summary-item"><span class="summary-label">Observações:</span> <span class="summary-value">${peaceHouseObservations}</span></div>`;
+        }
+    }
+    html += '</div>';
+
+    summaryData.innerHTML = html;
+}
+
+function handleEditClick() {
+    goToSection(1);  // Go back to first form section (personal data) to edit
+}
+
+async function handleConfirmSubmit(e) {
+    e.preventDefault();
+
+    const errorAlert = summaryPage.querySelector('#errorAlert');
+    errorAlert.classList.add('hidden');
+    setConfirmLoadingState(true);
+
+    try {
+        await submitToGoogleForms();
+        form.reset();
+        clearAllErrors();
+        document.getElementById('visitAddressFields').classList.add('hidden');
+        document.getElementById('prayerRequestFields').classList.add('hidden');
+        document.getElementById('peaceHouseFields').classList.add('hidden');
+        summaryPage.classList.add('hidden');
+        // Show success page
+        showSuccessPage();
+    } catch (error) {
+        console.error('Form submission error:', error);
+        errorAlert.classList.remove('hidden');
+    } finally {
+        setConfirmLoadingState(false);
+    }
+}
+
 function showSuccessPage() {
     form.classList.add('hidden');
     sectionHeader.classList.add('hidden');
+    summaryPage.classList.add('hidden');
     successPage.classList.remove('hidden');
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
