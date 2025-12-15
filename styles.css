@@ -191,13 +191,19 @@ body {
     gap: 1.5rem;
 }
 
-.section-title {
+.section-title,
+.summary-section-title {
     font-family: var(--font-impact);
     font-size: 2rem;
     color: var(--black);
     text-align: center;
     font-weight: 500;
     margin-bottom: 1rem;
+}
+
+.summary-section-title {
+    font-size: 1.9rem;
+    margin-bottom: 0 !important;
 }
 
 .description {
@@ -246,6 +252,10 @@ body {
 
 .form-section-4 .progress-bar::after {
     width: 100%;
+}
+
+.summary-page .progress-indicator {
+    display: none;
 }
 
 .section-indicator {
