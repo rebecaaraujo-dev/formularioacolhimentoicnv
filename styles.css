@@ -498,49 +498,6 @@ body {
 }
 
 /* ============================================
-   RESPONSIVE DESIGN
-   ============================================ */
-
-@media (max-width: 600px) {
-    .form-wrapper {
-        padding: 25px 15px;
-    }
-
-    .section-0-header h1,
-    .section-title {
-        font-size: 1.5rem;
-    }
-
-    .form-group input[type="text"],
-    .form-group input[type="email"],
-    .form-group input[type="tel"],
-    .form-group textarea {
-        padding: 10px 12px;
-        font-size: 16px;
-    }
-
-    .submit-btn,
-    .btn-primary,
-    .btn-primary-reset {
-        padding: 12px 20px;
-        font-size: 14px;
-    }
-
-    .form-actions {
-        flex-wrap: wrap;
-        gap: 10px;
-    }
-
-    .btn-primary,
-    .btn-secondary,
-    .submit-btn,
-    .btn-primary-reset {
-        flex: 1;
-        min-width: 100px;
-    }
-}
-
-/* ============================================
    SUCCESS PAGE
    ============================================ */
 
@@ -692,4 +649,48 @@ body {
     margin-top: 1rem;
     background: var(--black);
     width: 70%;
+}
+
+
+/* ============================================
+   RESPONSIVE DESIGN
+   ============================================ */
+
+@media (max-width: 600px) {
+    .form-wrapper {
+        padding: 25px 15px;
+    }
+
+    .section-0-header h1,
+    .section-title {
+        font-size: 1.5rem;
+    }
+
+    .form-group input[type="text"],
+    .form-group input[type="email"],
+    .form-group input[type="tel"],
+    .form-group textarea {
+        padding: 10px 12px;
+        font-size: 16px;
+    }
+
+    .submit-btn,
+    .btn-primary,
+    .btn-primary-reset {
+        padding: 12px 20px;
+        font-size: 14px;
+    }
+
+    .form-actions {
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .btn-primary,
+    .btn-secondary,
+    .submit-btn,
+    .btn-primary-reset {
+        flex: 1;
+        min-width: 100px;
+    }
 }
