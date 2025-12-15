@@ -20,13 +20,12 @@
                     <p>Preencha o formulário com as informações necessárias para que possamos atendê-lo da melhor forma.
                     </p>
                     <span>
-                        <p>Suas informações são confidenciais e serão tratadas apenas pelos responsáveis pelo
-                            acolhimento.</p>
+                        <p>Suas informações são confidenciais e serão acessadas apenas pelos responsáveis pelo acolhimento.</p>
                     </span>
                 </div>
 
-                <div class="consent" style="align-items: flex-start !important;">
-                    <label class="checkbox-label" style="justify-content: flex-start !important;">
+                <div class="consent consent--header">
+                    <label class="checkbox-label checkbox-label--header">
                         <input type="checkbox" id="consent" name="consent" required>
                         <span>Concordo com o tratamento dos meus dados *</span>
                     </label>
@@ -91,7 +90,7 @@
                         <span class="error-message" id="wantVisitError"></span>
                     </div>
 
-                    <div id="visitAddressFields" style="display: none;">
+                    <div id="visitAddressFields" class="hidden">
                         <div class="form-group">
                             <label for="visitAddress">Endereço para Visita *</label>
                             <input type="text" id="visitAddress" name="visitAddress"
@@ -150,7 +149,7 @@
                         <span class="error-message" id="hasPrayerRequestError"></span>
                     </div>
 
-                    <div id="prayerRequestFields" style="display: none;">
+                    <div id="prayerRequestFields" class="hidden">
                         <div class="form-group">
                             <label for="prayerRequest">Qual é o seu pedido de oração? *</label>
                             <textarea id="prayerRequest" name="prayerRequest"
@@ -170,12 +169,7 @@
                         </div>
                     </div>
                     <h2 class="section-title">Casa de Paz</h2>
-                    <p>O projeto <strong>Casa de Paz</strong> consiste em sete encontros, realizados uma vez por semana,
-                        na sua casa, por uma dupla de voluntários da igreja. Nosso objetivo é levar oração, apoio,
-                        conversa e uma mensagem de paz baseada nos ensinamentos de Jesus. Cada encontro dura cerca de
-                        uma hora e inclui uma breve reflexão, música e um momento de cuidado pela sua família. É
-                        totalmente gratuito e sem qualquer obrigação. Se você deseja receber um tempo de paz e esperança
-                        no seu lar, teremos alegria em visitar sua casa.</p>
+                    <p class="description">O projeto <strong>Casa de Paz</strong> consiste em sete encontros, realizados uma vez por semana, na sua casa, por uma dupla de voluntários da igreja. Nosso objetivo é levar oração, apoio, conversa e uma mensagem de paz baseada nos ensinamentos de Jesus. Cada encontro dura cerca de uma hora e inclui uma breve reflexão, música e um momento de cuidado pela sua família. É totalmente gratuito e sem qualquer obrigação. Se você deseja receber um tempo de paz e esperança no seu lar, teremos alegria em visitar sua casa.</p>
                     <div class="form-group">
                         <label>Você deseja receber o projeto Casa de Paz? *</label>
                         <div class="radio-group">
@@ -191,7 +185,7 @@
                         <span class="error-message" id="wantPeaceHouseError"></span>
                     </div>
 
-                    <div id="peaceHouseFields" style="display: none;">
+                    <div id="peaceHouseFields" class="hidden">
                         <div class="form-group">
                             <label for="peaceHouseAddress">Endereço *</label>
                             <input type="text" id="peaceHouseAddress" name="peaceHouseAddress"
@@ -225,26 +219,26 @@
                 <!-- FORM ACTIONS (BUTTONS AND ERROR MESSAGES) -->
                 <div class="section-5-actions">
                     <div class="form-actions">
-                        <button type="button" class="btn-secondary" id="prevBtn" style="display: none;">
+                        <button type="button" class="btn-secondary hidden" id="prevBtn">
                             Voltar
                         </button>
                         <button type="button" class="btn-primary" id="nextBtn">
                             Próximo
                         </button>
-                        <button type="submit" class="submit-btn" id="submitBtn" style="display: none;">
+                        <button type="submit" class="submit-btn hidden" id="submitBtn">
                             <span id="submitText">Enviar Formulário</span>
-                            <span id="submitSpinner" class="spinner" style="display: none;"></span>
+                            <span id="submitSpinner" class="spinner hidden"></span>
                         </button>
                     </div>
 
-                    <div id="errorAlert" class="error-alert" style="display: none;">
+                    <div id="errorAlert" class="error-alert hidden">
                         ✕ Ocorreu um erro ao enviar o formulário. Tente novamente.
                     </div>
                 </div>
             </form>
 
             <!-- SUCCESS PAGE -->
-            <div id="successPage" class="success-page" style="display: none;">
+            <div id="successPage" class="success-page hidden">
                 <div class="success-content">
                     <div class="success-icon">✓</div>
                     <h1>Formulário enviado com sucesso!</h1>

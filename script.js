@@ -63,9 +63,9 @@ function setupVisitConditionalFields() {
 
     const handleVisitChange = () => {
         if (wantVisitYes.checked) {
-            visitAddressFields.style.display = 'block';
+            visitAddressFields.classList.remove('hidden');
         } else {
-            visitAddressFields.style.display = 'none';
+            visitAddressFields.classList.add('hidden');
         }
     };
 
@@ -80,9 +80,9 @@ function setupPrayerConditionalFields() {
 
     const handlePrayerChange = () => {
         if (hasPrayerRequestYes.checked) {
-            prayerRequestFields.style.display = 'block';
+            prayerRequestFields.classList.remove('hidden');
         } else {
-            prayerRequestFields.style.display = 'none';
+            prayerRequestFields.classList.add('hidden');
         }
     };
 
@@ -97,9 +97,9 @@ function setupPeaceHouseConditionalFields() {
 
     const handlePeaceHouseChange = () => {
         if (wantPeaceHouseYes.checked) {
-            peaceHouseFields.style.display = 'block';
+            peaceHouseFields.classList.remove('hidden');
         } else {
-            peaceHouseFields.style.display = 'none';
+            peaceHouseFields.classList.add('hidden');
         }
     };
 
@@ -131,8 +131,8 @@ function handleNextClick() {
         if (currentSection < SECTIONS.length - 1) {
             goToSection(currentSection + 1);
         } else {
-            nextBtn.style.display = 'none';
-            submitBtn.style.display = 'flex';
+            nextBtn.classList.add('hidden');
+            submitBtn.classList.remove('hidden');
         }
     }
 }
@@ -177,24 +177,24 @@ function updateUI() {
     // Hide/show header and form based on current section
     if (currentSection === 0) {
         // Show header, hide form
-        sectionHeader.style.display = 'block';
+        sectionHeader.classList.remove('hidden');
         form.classList.remove('active');
-        nextBtn.style.display = 'none';
-        prevBtn.style.display = 'none';
-        submitBtn.style.display = 'none';
+        nextBtn.classList.add('hidden');
+        prevBtn.classList.add('hidden');
+        submitBtn.classList.add('hidden');
     } else {
         // Regular form sections
-        sectionHeader.style.display = 'none';
+        sectionHeader.classList.add('hidden');
         form.classList.add('active');
-        prevBtn.style.display = 'flex';
+        prevBtn.classList.remove('hidden');
         
         // Show Próximo button for sections 1-3, Enviar button for section 4
         if (currentSection === SECTIONS.length - 1) {
-            nextBtn.style.display = 'none';
-            submitBtn.style.display = 'flex';
+            nextBtn.classList.add('hidden');
+            submitBtn.classList.remove('hidden');
         } else {
-            nextBtn.style.display = 'flex';
-            submitBtn.style.display = 'none';
+            nextBtn.classList.remove('hidden');
+            submitBtn.classList.add('hidden');
         }
     }
 
@@ -390,9 +390,9 @@ async function handleFormSubmit(e) {
         await submitToGoogleForms();
         form.reset();
         clearAllErrors();
-        document.getElementById('visitAddressFields').style.display = 'none';
-        document.getElementById('prayerRequestFields').style.display = 'none';
-        document.getElementById('peaceHouseFields').style.display = 'none';
+        document.getElementById('visitAddressFields').classList.add('hidden');
+        document.getElementById('prayerRequestFields').classList.add('hidden');
+        document.getElementById('peaceHouseFields').classList.add('hidden');
         // Show success page
         showSuccessPage();
     } catch (error) {
@@ -492,27 +492,27 @@ function setLoadingState(isLoading) {
 }
 
 function showSuccessPage() {
-    form.style.display = 'none';
-    sectionHeader.style.display = 'none';
-    successPage.style.display = 'block';
+    form.classList.add('hidden');
+    sectionHeader.classList.add('hidden');
+    successPage.classList.remove('hidden');
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 function showErrorMessage() {
-    errorAlert.style.display = 'block';
+    errorAlert.classList.remove('hidden');
     setTimeout(() => {
-        errorAlert.style.display = 'none';
+        errorAlert.classList.add('hidden');
     }, 5000);
 }
 
 function hideMessages() {
-    errorAlert.style.display = 'none';
+    errorAlert.classList.add('hidden');
 }
 
 function handleResetForm() {
-    form.style.display = 'block';
-    successPage.style.display = 'none';
-    sectionHeader.style.display = 'block';
+    form.classList.remove('hidden');
+    successPage.classList.add('hidden');
+    sectionHeader.classList.remove('hidden');
     currentSection = 0;
     updateUI();
 }
