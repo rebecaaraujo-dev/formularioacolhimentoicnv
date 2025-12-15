@@ -70,7 +70,7 @@ body {
 .section-0-header {
     display: flex;
     flex-direction: column;
-    gap: 1.5rem;
+    gap: 1rem;
     text-align: center;
     padding-bottom: 2rem;
 }
@@ -263,6 +263,7 @@ body {
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
+    margin-top: 1rem;
 }
 
 .form-group label {
@@ -782,6 +783,11 @@ body {
    ============================================ */
 
 @media (max-width: 600px) {
+    .error-message:empty {
+        min-height: 0;
+        display: none;
+    }
+
     .form-wrapper {
         padding: 25px 15px;
     }
@@ -865,6 +871,10 @@ body {
         align-items: center;
         justify-content: center;
     }
+
+.form-group {
+    margin-top: 0;
+}
 
     .social-container p {
         width: 100%;
